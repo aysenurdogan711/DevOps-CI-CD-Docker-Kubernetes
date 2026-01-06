@@ -1,19 +1,32 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+- main   # veya master, branch adına göre değiştir
 
 pool:
-  name: 'Default'
+  name: 'Default'   # self-hosted agent pool adı
+
+variables:
+  imageName: nginx-html-demo
+  containerName: nginx-html-container
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: Docker@2
+  displayName: Docker Build
+  inputs:
+    command: build
+    Dockerfile: Dockerfile
+    repository: $(imageName)
+    tags: |
+      latest
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    docker stop $(containerName) || true
+    docker rm $(containerName) || true
+  displayName: Stop & Remove old container
+
+- script: |
+    docker run -d \
+      --name $(containerName) \
+      -p 80:80 \
+      $(imageName):latest
+  displayName: Run container
+
