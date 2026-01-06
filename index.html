@@ -1,31 +1,35 @@
-trigger:
-- main   # veya master, branch adına göre değiştir
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Basit HTML Sayfası</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 40px;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        .kutu {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+        }
+    </style>
+</head> 
+<body>
 
-pool:
-  name: Default   # self-hosted agent pool adı
+    <div class="kutu">
+        <h1>Merhaba Dünya</h1>
+        <p>Bu basit bir HTML sayfasıdır.</p>
+        <p>HTML sayfanın iskeletini kurar, CSS ise ona kıyafet giydirir.</p>
+    </div>
 
-variables:
-  imageName: nginx-html-demo
-  containerName: nginx-html-container
-
-steps:
-- task: Docker@2
-  displayName: Docker Build
-  inputs:
-    command: build
-    Dockerfile: Dockerfile
-    repository: $(imageName)
-    tags: |
-      latest
-
-- script: |
-    docker stop $(containerName) || true
-    docker rm $(containerName) || true
-  displayName: Stop & Remove old container
-
-- script: |
-    docker run -d \
-      --name $(containerName) \
-      -p 80:80 \
-      $(imageName):latest
-  displayName: Run container
+</body>
+</html>
