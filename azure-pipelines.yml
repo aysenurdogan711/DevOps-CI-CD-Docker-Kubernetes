@@ -2,18 +2,14 @@ trigger:
 - main
 
 pool:
-  name: Default   # Azureagent'in olduğu pool
+  name: Default
 
 steps:
-- script: |
-    echo "Docker version:"
-    docker version
-  displayName: Docker Version Test
+- script: docker version
+  displayName: Docker Version
 
-- script: |
-    docker build -t nginx-test .
+- script: docker build -t nginx-test .
   displayName: Docker Build
 
-- script: |
-    docker run --rm -p 8080:80 nginx-test
+- script: docker run --rm nginx-test nginx -v
   displayName: Docker Run Test
