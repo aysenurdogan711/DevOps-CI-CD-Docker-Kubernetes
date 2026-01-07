@@ -2,13 +2,14 @@ trigger:
 - main
 
 pool:
-  name: Default   
+  name: Default   # Agent'ın olduğu pool
 
 steps:
-- script: |
-    docker build -t myapp:latest .
-  displayName: Docker Build
+- script: docker version
+  displayName: Docker Version Test
 
-- script: |
-    kubectl apply -f deployment.yaml
-  displayName: Deploy to Kubernetes
+- script: docker build -t agent-test .
+  displayName: Docker Build Test
+
+- script: docker run --rm agent-test
+  displayName: Docker Run Test
