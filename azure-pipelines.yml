@@ -5,11 +5,12 @@ pool:
   name: Default
 
 steps:
-- script: docker version
-  displayName: Docker Version
+- script: |
+    docker build -t demo-app:latest .
+  displayName: Docker Image Build
 
-- script: docker build -t nginx-test .
-  displayName: Docker Build
+- script: |
+    kubectl apply -f deployment.yaml
+    kubectl apply -f service.yaml
+  displayName: Kubernetes Deploy
 
-- script: docker run --rm nginx-test nginx -v
-  displayName: Docker Run Test
