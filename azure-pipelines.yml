@@ -1,32 +1,14 @@
 trigger:
-- main   # veya master, branch adına göre değiştir
+- main
 
 pool:
-  name: 'Default'   # self-hosted agent pool adı
-
-variables:
-  imageName: nginx-html-demo
-  containerName: nginx-html-container
+  name: Default   
 
 steps:
-- task: Docker@2
+- script: |
+    docker build -t myapp:latest .
   displayName: Docker Build
-  inputs:
-    command: build
-    Dockerfile: Dockerfile
-    repository: $(imageName)
-    tags: |
-      latest
 
 - script: |
-    docker stop $(containerName) || true
-    docker rm $(containerName) || true
-  displayName: Stop & Remove old container
-
-- script: |
-    docker run -d \
-      --name $(containerName) \
-      -p 80:80 \
-      $(imageName):latest
-  displayName: Run container
-
+    kubectl apply -f deployment.yaml
+  displayName: Deploy to Kubernetes
