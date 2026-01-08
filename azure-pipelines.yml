@@ -2,15 +2,25 @@ trigger:
 - main
 
 pool:
-  name: Default
+  name: Default   # senin self-hosted agent pool adın neyse o
 
 steps:
-- script: |
-    docker build -t demo-app:latest .
-  displayName: Docker Image Build
+# 1️⃣ Debug: kubeconfig gerçekten okunuyor mu?
+- task: CmdLine@2
+  displayName: "Kubernetes Context Kontrol"
+  inputs:
+    script: |
+      echo KUBECONFIG ayarlaniyor
+      set KUBECONFIG=C:\azagent\.kube\config
+      kubectl version --client
+      kubectl config get-contexts
+      kubectl get nodes
 
-- script: |
-    kubectl apply -f deployment.yaml
-    kubectl apply -f service.yaml
-  displayName: Kubernetes Deploy
-
+# 2️⃣ Deployment
+- task: CmdLine@2
+  displayName: "Kubernetes Deploy"
+  inputs:
+    script: |
+      set KUBECONFIG=C:\azagent\.kube\config
+      kubectl apply -f deployment.yaml
+      kubectl apply -f service.yaml
