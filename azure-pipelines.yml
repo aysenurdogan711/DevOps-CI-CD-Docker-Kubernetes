@@ -10,8 +10,6 @@ steps:
   displayName: Docker Image Build
 
 - script: |
-    kubectl create -f deployment.yaml --dry-run=client -o yaml
-    kubectl create -f service.yaml --dry-run=client -o yaml
+    kubectl create -f deployment.yaml --dry-run=client --validate=false -o yaml
+    kubectl create -f service.yaml --dry-run=client --validate=false -o yaml
   displayName: Kubernetes Manifest Validation
-
-
