@@ -1,20 +1,39 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Azure DevOps CI/CD ile Kubernetes Deployment
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Bu proje, Azure DevOps kullanılarak modern bir CI/CD hattının
+uçtan uca kurulmasını ve Docker Desktop üzerindeki Kubernetes
+ortamına otomatik deployment yapılmasını göstermektedir.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Proje Akışı
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+1. Kodlar Azure DevOps Repo üzerinde tutulmaktadır.
+2. Main branch'e yapılan her push işlemi pipeline'ı otomatik tetikler.
+3. Pipeline, self-hosted Linux agent (Docker container) üzerinde çalışır.
+4. Docker image build edilir.
+5. Kubernetes deployment.yaml ve service.yaml dosyaları kullanılarak
+   uygulama Kubernetes ortamına deploy edilir.
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Kullanılan Teknolojiler
+
+- Azure DevOps Repos & Pipelines
+- Docker Desktop
+- Kubernetes (local)
+- kubectl
+- Self-hosted Linux Agent
+- PowerShell (Windows ortamı)
+
+## Pipeline Özellikleri
+
+- Otomatik tetiklenme (push ile)
+- Default agent pool kullanımı
+- Docker image build işlemi
+- Kubernetes'e otomatik deployment
+- Manuel işlem içermez
+
+## Doğrulama
+
+Pipeline başarıyla çalıştıktan sonra aşağıdaki komut ile
+Kubernetes üzerindeki pod'lar kontrol edilmiştir:
+
+```bash
+kubectl get pods
