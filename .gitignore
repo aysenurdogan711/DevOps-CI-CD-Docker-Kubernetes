@@ -1,0 +1,23 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+*.iml
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Local environment/configuration
+.env
+.env.*
+*.local
+
+# Kubernetes local/private configuration
+.kube/
+
+# Docker local overrides
+compose.override.yml

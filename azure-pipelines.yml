@@ -1,26 +1,35 @@
 trigger:
-- main
+  - main
 
 pool:
-  name: Default   # senin self-hosted agent pool adın neyse o
+  name: Default
 
 steps:
-# 1️⃣ Debug: kubeconfig gerçekten okunuyor mu?
-- task: CmdLine@2
-  displayName: "Kubernetes Context Kontrol"
-  inputs:
-    script: |
-      echo KUBECONFIG ayarlaniyor
-      set KUBECONFIG=C:\azagent\.kube\config
-      kubectl version --client
-      kubectl config get-contexts
-      kubectl get nodes
+  - task: CmdLine@2
+    displayName: "Build Docker image"
+    inputs:
+      script: |
+        docker build -t demo-app:latest .
+        docker image inspect demo-app:latest
 
-# 2️⃣ Deployment
-- task: CmdLine@2
-  displayName: "Kubernetes Deploy"
-  inputs:
-    script: |
-      set KUBECONFIG=C:\azagent\.kube\config
-      kubectl apply -f deployment.yaml
-      kubectl apply -f service.yaml
+  - task: CmdLine@2
+    displayName: "Validate Kubernetes configuration"
+    inputs:
+      script: |
+        set KUBECONFIG=C:\azagent\.kube\config
+        kubectl version --client
+        kubectl config get-contexts
+        kubectl get nodes
+        kubectl apply --dry-run=client -f k8s\deployment.yaml
+        kubectl apply --dry-run=client -f k8s\service.yaml
+
+  - task: CmdLine@2
+    displayName: "Deploy to Kubernetes"
+    inputs:
+      script: |
+        set KUBECONFIG=C:\azagent\.kube\config
+        kubectl apply -f k8s\deployment.yaml
+        kubectl apply -f k8s\service.yaml
+        kubectl rollout status deployment/demo-app --timeout=120s
+        kubectl get pods
+        kubectl get service demo-service

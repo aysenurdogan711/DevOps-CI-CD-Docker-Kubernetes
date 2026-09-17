@@ -1,39 +1,144 @@
-# Azure DevOps CI/CD ile Kubernetes Deployment
+# DevOps CI/CD: Docker and Kubernetes Deployment
 
-Bu proje, Azure DevOps kullanılarak modern bir CI/CD hattının
-uçtan uca kurulmasını ve Docker Desktop üzerindeki Kubernetes
-ortamına otomatik deployment yapılmasını göstermektedir.
+A hands-on DevOps project demonstrating an automated CI/CD workflow with **Azure DevOps, Docker, and Kubernetes**. The application is a lightweight Nginx web page that is containerized, validated, and deployed to a local Kubernetes cluster running through Docker Desktop.
 
-## Proje Akışı
+## Overview
 
-1. Kodlar Azure DevOps Repo üzerinde tutulmaktadır.
-2. Main branch'e yapılan her push işlemi pipeline'ı otomatik tetikler.
-3. Pipeline, self-hosted Linux agent (Docker container) üzerinde çalışır.
-4. Docker image build edilir.
-5. Kubernetes deployment.yaml ve service.yaml dosyaları kullanılarak
-   uygulama Kubernetes ortamına deploy edilir.
+The project demonstrates the following workflow:
 
-## Kullanılan Teknolojiler
+```text
+Developer pushes to main
+          |
+          v
+   Azure DevOps Pipeline
+          |
+          +--> Build Docker image
+          |
+          +--> Validate Kubernetes manifests
+          |
+          +--> Deploy to Kubernetes
+          |
+          v
+    Docker Desktop
+    Kubernetes Cluster
+          |
+          v
+      Nginx Web App
+```
 
-- Azure DevOps Repos & Pipelines
-- Docker Desktop
-- Kubernetes (local)
-- kubectl
-- Self-hosted Linux Agent
-- PowerShell (Windows ortamı)
+## Technologies
 
-## Pipeline Özellikleri
+- **Azure DevOps Repos** – source control
+- **Azure Pipelines** – CI/CD automation
+- **Docker** – containerization
+- **Nginx** – lightweight web server
+- **Kubernetes** – container orchestration
+- **kubectl** – Kubernetes command-line interface
+- **Docker Desktop** – local Kubernetes environment
+- **YAML** – pipeline and Kubernetes configuration
+- **Self-hosted Azure DevOps agent** – pipeline execution
 
-- Otomatik tetiklenme (push ile)
-- Default agent pool kullanımı
-- Docker image build işlemi
-- Kubernetes'e otomatik deployment
-- Manuel işlem içermez
+## Project Structure
 
-## Doğrulama
+```text
+.
+├── index.html
+├── Dockerfile
+├── azure-pipelines.yml
+├── k8s/
+│   ├── deployment.yaml
+│   └── service.yaml
+├── .gitignore
+└── README.md
+```
 
-Pipeline başarıyla çalıştıktan sonra aşağıdaki komut ile
-Kubernetes üzerindeki pod'lar kontrol edilmiştir:
+## CI/CD Pipeline
+
+The Azure Pipelines workflow is triggered by pushes to the `main` branch.
+
+### 1. Build
+
+The pipeline builds the application image:
 
 ```bash
+docker build -t demo-app:latest .
+```
+
+### 2. Validate
+
+The pipeline checks the Kubernetes client, cluster context, and node availability. It also performs a client-side validation of the Kubernetes manifests.
+
+### 3. Deploy
+
+The Kubernetes resources are applied with:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+```
+
+The pipeline then waits for the Deployment rollout and checks the resulting Pods and Service.
+
+## Kubernetes Configuration
+
+### Deployment
+
+The Deployment creates one replica of the Nginx-based application and exposes container port `80`.
+
+### Service
+
+A Kubernetes `NodePort` Service exposes the application outside the cluster.
+
+## Running Locally
+
+### Build the Docker image
+
+```bash
+docker build -t demo-app:latest .
+```
+
+### Run the container directly
+
+```bash
+docker run --rm -p 8080:80 demo-app:latest
+```
+
+Then open `http://localhost:8080`.
+
+### Deploy to Kubernetes
+
+Make sure Kubernetes is enabled in Docker Desktop and that `kubectl` is configured for the Docker Desktop context.
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
 kubectl get pods
+kubectl get service demo-service
+```
+
+## Azure DevOps Agent Configuration
+
+The pipeline is designed for a **self-hosted Windows agent** with Docker, `kubectl`, and access to the local Kubernetes cluster.
+
+The example pipeline uses the following kubeconfig path on the agent:
+
+```text
+C:\azagent\.kube\config
+```
+
+This path is environment-specific and should be changed if the agent uses a different configuration path.
+
+## What This Project Demonstrates
+
+- Source control with Git
+- CI/CD pipeline automation
+- Docker image creation
+- Kubernetes Deployments and Services
+- Kubernetes manifest validation
+- Automated application deployment
+- Self-hosted build agent configuration
+- Local Kubernetes development with Docker Desktop
+
+## Notes
+
+This repository is intended as a learning and portfolio project. The Kubernetes deployment uses a locally available Docker image (`imagePullPolicy: Never`) and is therefore designed for a local Docker Desktop Kubernetes environment rather than a production container registry workflow.
